@@ -7,6 +7,8 @@ Informatics and Information Technologies, Slovak University of Technology in Bra
 
 ```
 .
+├── .github/workflows/
+│   └── build.yml             # CI/CD — builds PDF on push to master
 ├── assets/
 │   └── logo.png              # FIIT STU logo (used on the cover page)
 ├── src/
@@ -50,6 +52,18 @@ According to the documentation \cite{postgresql-docs}, ...
 ```
 
 The bibliography is rendered automatically at the end of the document via `\printbibliography`.
+
+## CI/CD
+
+The repository includes a GitHub Actions workflow that **automatically builds the PDF** on every push to `master`. No local LaTeX installation needed — just push and download the result.
+
+The built PDF is available as an artifact in the **Actions** tab of your repository:
+
+> Repository → Actions → latest run → Artifacts → `assignment`
+
+This means you can edit `main.tex` directly on GitHub (or via Codespaces), push, and pick up the compiled PDF without ever installing LaTeX locally.
+
+The workflow lives in `.github/workflows/build.yml` and uses [`xu-cheng/latex-action`](https://github.com/xu-cheng/latex-action) — a full TeX Live environment that handles all the `pdflatex`/`bibtex` passes automatically.
 
 ## How to use
 
