@@ -34,7 +34,7 @@
 \input{lang/sk}
 
 % ─── Detaily studenta ────────────────────────────────────
-\newcommand{\StudentName}{Peter Mezei, David}
+\newcommand{\StudentName}{Peter Mezei, David Blanko}
 \newcommand{\StudyGroup}{Utorok 11:00}
 \newcommand{\AssignmentNumber}{1}
 \newcommand{\AssignmentTitle}{Návrh databázového modelu - Správa kina}
@@ -110,7 +110,7 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
     \item \textbf{Unikátnosť lístka:} Dva platné lístky nemôžu odkazovať na rovnaké sedadlo v rámci toho istého premietania.
     \item \textbf{Časová exkluzivita sály:} V jednej kinosále nemôžu prebiehať dve premietania súčasne. Začiatok nového premietania musí byť neskôr ako koniec predchádzajúceho (vrátane času na údržbu).
     \item \textbf{Kapacita sály:} Počet lístkov na premietanie nesmie prekročiť počet existujúcich sedadiel prislúchajúcich danej sále.
-    \item \textbf{Oprávnenie zamestnanca:} Zamestnanec môže vykonávať úlohu typu ,,Obsluha bufetu`` len vtedy, ak má v systéme evidovaný platný atribút \texttt{zdravotny\_preukaz}.
+    \item \textbf{Oprávnenie zamestnanca:} Zamestnanec môže vykonávať úlohy s jedlom len vtedy, ak má v systéme evidovaný platný zdravotný preukaz.
     \item \textbf{Dostupnosť zamestnanca:} Jeden zamestnanec nemôže mať pridelené dve časovo sa prekrývajúce úlohy.
     \item \textbf{Konzistencia sedadiel:} Lístok je možné vytvoriť len na sedadlo, ktoré fyzicky patrí do kinosály, v ktorej sa koná dané premietanie.
 \end{enumerate}
