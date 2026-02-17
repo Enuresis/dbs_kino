@@ -9,10 +9,10 @@
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{booktabs}       % nicer tables (\toprule, \midrule, \bottomrule)
-\usepackage{float}          % [H] placement for figures and tables
-\usepackage{xcolor}         % colors (used by listings)
-\usepackage{listings}       % code listings
+\usepackage{booktabs}       % krajsie tabulky (\toprule, \midrule, \bottomrule)
+\usepackage{float}          % [H] umiestnenie pre obrazky a tabulky
+\usepackage{xcolor}         % farby (pouzite v listings)
+\usepackage{listings}       % vypis kodu
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue!70!black}
 
 % ─── Code listing style ─────────────────────────────────────────────────────
@@ -25,26 +25,24 @@
     xleftmargin=2em,
     framexleftmargin=1.5em
 }
-% Pro tip: for syntax highlighting, look into the 'minted' package.
 
 % ─── Bibliography ────────────────────────────────────────────────────────────
 \usepackage[style=numeric, backend=bibtex]{biblatex}
 \addbibresource{references.bib}
 
-% ─── Language (swap to lang/sk for Slovak) ───────────────────────────────────
+% ─── Language────────────────────────────────────────────
 \input{lang/sk}
 
-% ─── Student details ─────────────────────────────────────────────────────────
-\newcommand{\StudentName}{Peter Mezei, David Dubec}
-\newcommand{\StudyGroup}{Tuesday 11:00}
-\newcommand{\AssignmentNumber}{5}
-\newcommand{\AssignmentTitle}{Návrh databazového modelu}
+% ─── Detaily studenta ────────────────────────────────────
+\newcommand{\StudentName}{Peter Mezei, David}
+\newcommand{\StudyGroup}{Utorok 11:00}
+\newcommand{\AssignmentNumber}{1}
+\newcommand{\AssignmentTitle}{Návrh databázového modelu - Správa kina}
 \newcommand{\AcademicYear}{2025/2026}
 
-% =============================================================================
 \begin{document}
 
-% ─── Cover page ──────────────────────────────────────────────────────────────
+% ─── Titulna stranka ─────────────────────────────────────────────────────────
 \begin{titlepage}
     \centering
 
@@ -75,199 +73,67 @@
     \vspace{1.5cm}
 \end{titlepage}
 
-% ─── Table of contents ───────────────────────────────────────────────────────
+% ─── Obsah ───────────────────────────────────────────────────────────────────
 \renewcommand{\contentsname}{\LabelContents}
 \tableofcontents
 \newpage
 
-% =============================================================================
-% This document serves as both the assignment template and a quick guide
-% to the LaTeX features you will need. Replace the content, keep the structure.
-%
-% Template source: https://github.com/FIIT-Databases/assignment-template
-% =============================================================================
+\section{Špecifikácia}
+\label{sec:specifikacia}
 
-\section{Analysis}
-\label{sec:analysis}
+\subsection{Aký problém systém rieši a pre koho je určený?}
+Systém rieši centralizovanú správu kina, konkrétne evidenciu filmov, plánovanie premietaní v sálach, predaj lístkov na konkrétne sedadlá a manažment úloh zamestnancov. Nahrádza manuálnu evidenciu, čím eliminuje duplicitu predaných miest a kolízie v harmonograme sál.
 
-The goal of this project was to create a submission template for the DBS
-course that students can clone and start writing in immediately. The template
-should be easy to use, support Slovak and English, and not require any prior
-\LaTeX{} experience\footnote{If this is your first time with \LaTeX{}, the
-Overleaf guide \cite{overleaf-docs} covers everything you need in about 30 minutes.}.
+Systém je určený primárne pre manažéra kina (administrácia) a radových zamestnancov (predaj, údržba). Pridanou hodnotou je automatizácia kontroly kapacít a zefektívnenie prideľovania práce.
 
-The template repository is available at \cite{template-repo}.
-
-% ── Subsections ──────────────────────────────────────────────────────────────
-% Use \subsection{} and \subsubsection{} when you need more structure.
-
-\subsection{Requirements}
-
-We identified the following requirements:
-
+\subsection{Kto sú aktéri systému?}
 \begin{itemize}
-    \item Clean cover page with faculty branding.
-    \item Bilingual support (SK/EN) via a single toggle.
-    \item Examples of tables, figures, code, and citations.
-    \item Minimal package dependencies --- it should compile everywhere.
+    \item \textbf{Manažér:} Má plné práva. Spravuje číselníky (filmy, sály), vytvára harmonogram premietaní a prideľuje pracovné úlohy zamestnancom.
+    \item \textbf{Zamestnanec (Pokladník / Uvádzač):} Realizuje predaj lístkov a prehliada si zoznam svojich pridelených úloh (napr. upratovanie sály, kontrola lístkov).
+    \item \textbf{Zákazník:} Neregistrovaný používateľ, ktorý si prezerá program a kupuje lístky.
 \end{itemize}
 
-When listing ordered steps, use \texttt{enumerate} instead:
+\subsection{Aké sú kľúčové entity?}
+\begin{itemize}
+    \item \textbf{Film:} Základná entita nesúca informácie o diele (názov, dĺžka, žáner, vekové obmedzenie).
+    \item \textbf{Kinosála:} Reprezentuje fyzickú miestnosť. Má definovaný typ (2D, 3D) a väzbu na sedadlá.
+    \item \textbf{Sedadlo:} Konkrétne miesto v sále (rad, číslo).
+    \item \textbf{Premietanie:} Spája Film a Kinosálu v konkrétnom čase.
+    \item \textbf{Lístok:} Záznam o predaji. Viaže sa na jedno Premietanie a jedno konkrétne Sedadlo.
+    \item \textbf{Zamestnanec:} Osoba v pracovnom pomere. Obsahuje atribúty ako typ úväzku a platnosť zdravotného preukazu (pre prácu s občerstvením).
+    \item \textbf{Úloha:} Konkrétna pracovná činnosť pridelená zamestnancovi v určitom čase (napr. upratovanie sály po premietaní).
+\end{itemize}
+
+\subsection{Biznis pravidlá a integritné obmedzenia}
 
 \begin{enumerate}
-    \item Clone the repository.
-    \item Edit \texttt{main.tex}.
-    \item Run \texttt{make}.
-    \item Submit the PDF.
+    \item \textbf{Unikátnosť lístka:} Dva platné lístky nemôžu odkazovať na rovnaké sedadlo v rámci toho istého premietania.
+    \item \textbf{Časová exkluzivita sály:} V jednej kinosále nemôžu prebiehať dve premietania súčasne. Začiatok nového premietania musí byť neskôr ako koniec predchádzajúceho (vrátane času na údržbu).
+    \item \textbf{Kapacita sály:} Počet lístkov na premietanie nesmie prekročiť počet existujúcich sedadiel prislúchajúcich danej sále.
+    \item \textbf{Oprávnenie zamestnanca:} Zamestnanec môže vykonávať úlohu typu ,,Obsluha bufetu`` len vtedy, ak má v systéme evidovaný platný atribút \texttt{zdravotny\_preukaz}.
+    \item \textbf{Dostupnosť zamestnanca:} Jeden zamestnanec nemôže mať pridelené dve časovo sa prekrývajúce úlohy.
+    \item \textbf{Konzistencia sedadiel:} Lístok je možné vytvoriť len na sedadlo, ktoré fyzicky patrí do kinosály, v ktorej sa koná dané premietanie.
 \end{enumerate}
 
+\newpage
+\section{Definovanie používateľských scenárov}
+\label{sec:scenare}
+
+\textit{potom doplnit scenare}
 
 \newpage
-\section{Proposal}
-\label{sec:proposal}
+\section{Návrh relačného modelu}
+\label{sec:relacny_model}
 
-We compared a few approaches before settling on the current structure.
-Table~\ref{tab:comparison} summarizes our options.
-
-% ── Tables ───────────────────────────────────────────────────────────────────
-% Use \begin{table}[H] to place the table exactly here.
-% Label it with \label{} and reference it with Table~\ref{}.
-
-\begin{table}[H]
-    \centering
-    \caption{Comparison of template approaches}
-    \label{tab:comparison}
-    \begin{tabular}{l c c c}
-        \toprule
-        \textbf{Approach}  & \textbf{Easy to edit} & \textbf{Bilingual} & \textbf{Compiles anywhere} \\
-        \midrule
-        Word document       & yes                   & manual             & n/a  \\
-        Markdown + Pandoc   & yes                   & no                 & maybe \\
-        \LaTeX{} template   & yes                   & yes                & yes  \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-We chose \LaTeX{} because it handles structured documents, citations,
-and cross-references well --- things that matter when writing technical
-reports\footnote{It also looks way better than a Word document. But we are
-biased.}. Unrelated: the wood frog can survive being frozen solid for months ---
-its heart stops, it stops breathing, and in spring it just thaws and hops away.
-We found this less stressful than debugging \LaTeX{} table alignment.
-
+\textit{Tu navrhy}
 
 \newpage
-\section{Implementation}
-\label{sec:implementation}
+\section{Zhodnotenie}
+\label{sec:zhodnotenie}
 
-The template lives in a simple directory structure with localization files
-separated from the main document. Switching language requires changing one
-line:
-
-% ── Code listings ────────────────────────────────────────────────────────────
-% Use lstlisting for short code snippets.
-
-\begin{lstlisting}[language=TeX, caption={Switching language in the preamble}]
-% English
-\input{lang/en}
-
-% Slovak
-\input{lang/sk}
-\end{lstlisting}
-
-For SQL or other languages, change the \texttt{language} parameter:
-
-\begin{lstlisting}[language=SQL, caption={Example SQL query}]
-SELECT s.name, COUNT(*) AS submission_count
-FROM students s
-JOIN submissions sub ON s.id = sub.student_id
-GROUP BY s.name
-ORDER BY submission_count DESC;
-\end{lstlisting}
-
-% ── Inline code ──────────────────────────────────────────────────────────────
-% Use \texttt{} for inline code: \texttt{SELECT * FROM ...}
-
-References to tables, figures, and sections are automatic. For example,
-this is Section~\ref{sec:implementation}, the comparison is in
-Table~\ref{tab:comparison}, and the faculty logo is shown in
-Figure~\ref{fig:logo} in Attachment~\ref{sec:attachment-a1}.
-If you add or reorder content, the numbers update on the next build.
-
-% ── Citations ────────────────────────────────────────────────────────────────
-% Add entries to references.bib, then cite them with \cite{key}.
-% The bibliography at the end is generated automatically.
-
-The database fundamentals referenced throughout the course are covered
-in \cite{elmasri2016}. For PostgreSQL-specific syntax, see
-\cite{postgresql-docs}.
-
-
-\newpage
-\section{Challenges}
-\label{sec:challenges}
-
-The main challenge was keeping the template simple enough that a student
-seeing \LaTeX{} for the first time would not immediately close the file.
-We solved this by limiting the preamble to essential packages and
-putting all examples in one place --- this document.
-
-We also learned that BibTeX interprets \texttt{@} signs in comments as
-entry types, which caused confusing errors. Small things like this are
-easy to fix once you know about them, but hard to debug the first time\footnote{A
-group of frogs is called an ``army.'' A group of students debugging BibTeX at
-2\,AM is called ``Tuesday.''}.
-
-
-\newpage
-\section{Conclusion}
-\label{sec:conclusion}
-
-The template meets the requirements from Section~\ref{sec:analysis}.
-It compiles with a standard \LaTeX{} distribution, supports two
-languages, and provides working examples of every feature students
-are likely to need.
-
-For anything not covered here, the Overleaf documentation
-\cite{overleaf-docs} is an excellent reference.
+\textit{zhodnotenie}
 
 % ─── Bibliography ────────────────────────────────────────────────────────────
 \printbibliography
-
-% ─── Attachments ─────────────────────────────────────────────────────────────
-\newpage
-\appendix
-
-\section{Sample figures}
-\label{sec:attachment-a1}
-
-% ── Figures ──────────────────────────────────────────────────────────────────
-% Use \begin{figure}[H] to place the figure exactly here.
-% Label it with \label{} and reference it with Figure~\ref{}.
-% Keep images in the assets/ directory.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.25\textwidth]{../assets/logo}
-    \caption{Faculty logo used on the cover page}
-    \label{fig:logo}
-\end{figure}
-
-Place your diagrams, screenshots, and other supporting images in this
-section. Reference them from the main text using
-\texttt{Figure\~{}\textbackslash ref\{fig:logo\}}.
-
-Some frogs can absorb water through a patch of skin on their belly called a
-``drinking patch'' --- they literally sit in puddles to hydrate. This has
-nothing to do with databases but is objectively more interesting than
-anything on this page.
-
-% You can control the image size with the width parameter:
-%   width=0.5\textwidth   ... half the page width
-%   width=5cm             ... exact size
-%   scale=0.8             ... 80% of original
-
-% To add more figures, copy the block above and change the file path,
-% caption, and label.
 
 \end{document}
