@@ -119,7 +119,91 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
 \section{Definovanie používateľských scenárov}
 \label{sec:scenare}
 
-\textit{potom doplnit scenare}
+\subsection*{Scenár 1: Naplánovanie harmonogramu premietania}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Vytvorenie inštancie entity \textit{Premietanie}. Manažér priraďuje konkrétny \textit{Film} do zvolenej \textit{Kinosály} na určený časový interval. Scenár primárne rieši validáciu časovej exkluzivity sály.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Manažér inicializuje proces tvorby nového premietania a vyberie záznam z číselníka filmov.
+        \item Systém načíta atribút \textit{dĺžka} z vybraného filmu.
+        \item Manažér definuje \textit{čas\_začiatku} a vyberie cieľovú kinosálu.
+        \item Systém algoritmicky vypočíta \textit{čas\_konca} (čas začiatku + dĺžka filmu + definovaná konštanta pre údržbu/upratovanie sály).
+        \item Systém vykoná dopyt na existujúce premietania pre danú kinosálu a overí, či nedochádza k prieniku časových intervalov.
+        \item Transakcia je potvrdená (commit) a záznam je perzistentne uložený.
+    \end{enumerate}
+    \item \textbf{Dátova vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie:} \texttt{SELECT} nad tabuľkou \texttt{Film} pre získanie dĺžky. Následne \texttt{SELECT} nad tabuľkou \texttt{Premietanie} s podmienkou pre konkrétny cudzí kľúč (\texttt{FK\_Kinosala}) a vyhodnotením prekrývania časových pečiatok (\texttt{DATETIME}).
+        \item \textit{Zápis:} \texttt{INSERT} operácia do väzobnej/asociačnej tabuľky \texttt{Premietanie}, čím vznikajú cudzie kľúče na \texttt{Film} a \texttt{Kinosálu}.
+        \item \textit{Kontrola pravidiel:} Uplatňuje sa biznis pravidlo č. 2.
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak databázový dopyt vráti existujúci záznam v kolidujúcom čase, systém vyvolá výnimku, zruší zápis a vyzve manažéra na úpravu vstupných parametrov (iná sála alebo iný čas).
+    \item \textbf{UML diagram:} \textbf{Este treba Diagram aktivít}.
+\end{itemize}
+
+\subsection*{Scenár 2: Transakčný predaj lístkov s alokáciou sedadiel}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Zamestnanec (pokladník) realizuje predaj lístkov. Scenár vyžaduje načítanie priestorovej mapy sály, kontrolu dostupnosti a vytvorenie záznamov rešpektujúcich unikátnosť sedadla pre dané premietanie.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Pokladník vyberie inštanciu aktuálneho premietania.
+        \item Systém načíta topológiu sály a vyhodnotí obsadenosť jednotlivých sedadiel.
+        \item Pokladník označí množinu voľných sedadiel (napr. 2 lístky) a inicializuje platbu.
+        \item Systém bezprostredne pred zápisom overí aktuálnosť stavu.
+        \item Systém vygeneruje záznamy pre lístky a označí ich ako predané.
+    \end{enumerate}
+    \item \textbf{Dátova vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie:} Vykonáva sa relačné spojenie (\texttt{JOIN}) tabuliek \texttt{Kinosala} a \texttt{Sedadlo}. Na zistenie voľných miest sa použije \texttt{LEFT JOIN} na tabuľku \texttt{Listok} filtrovaný podľa \texttt{FK\_Premietanie}. Záznamy s hodnotou \texttt{NULL} v spojenej tabuľke lístkov reprezentujú voľné sedadlá.
+        \item \textit{Zápis:} Vykoná sa viacnásobný \texttt{INSERT} do tabuľky \texttt{Listok}. Vznikajú väzby (\texttt{FK}) na \texttt{Premietanie} a konkrétne \texttt{Sedadlo}.
+        \item \textit{Kontrola pravidiel:} Uplatňuje sa integritné obmedzenie \texttt{UNIQUE(FK\_Premietanie, FK\_Sedadlo)} na databázovej úrovni, čo garantuje pravidlo č. 1 (Unikátnosť lístka). Zabezpečuje sa aj pravidlo č. 6 (Konzistencia sedadiel).
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak v čase medzi načítaním mapy sály a potvrdením transakcie iný používateľ obsadí vybrané sedadlo (porušenie \texttt{UNIQUE} constraintu), databáza odmietne \texttt{INSERT}. Transakcia sa roll-backne a používateľovi sa aktualizuje mapa s chybovým hlásením.
+    \item \textbf{UML diagram:} \textbf{Este treba Sekvenčný diagram}.
+\end{itemize}
+
+\subsection*{Scenár 3: Alokácia personálnych kapacít na prevádzkové úlohy}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Manažér priraďuje konkrétnu inštanciu entity \textit{Úloha} (napr. predaj v bufete) zamestnancovi. Systém filtruje zamestnancov na základe ich kvalifikačných obmedzení (zdravotný preukaz) a časovej disponibility.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Manažér definuje typ úlohy a vyžadovaný časový interval.
+        \item Systém načíta a aplikuje filtre na záznamy v tabuľke zamestnancov na základe typu úlohy.
+        \item Zobrazí sa podmnožina zamestnancov, ktorí spĺňajú podmienky.
+        \item Manažér vyberie zamestnanca a potvrdí alokáciu.
+        \item Systém verifikuje, či zamestnanec nemá v danom čase priradenú inú úlohu.
+        \item Systém vytvorí asociáciu medzi zamestnancom a úlohou.
+    \end{enumerate}
+    \item \textbf{Dátova vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie:} Filtrovací \texttt{SELECT} nad entitou \texttt{Zamestnanec} s podmienkou v klauzule \texttt{WHERE}, ktorá overuje, či \texttt{platnost\_zdravotneho\_preukazu >= CURRENT\_DATE} (ak ide o prácu s jedlom). Následný dopyt nad tabuľkou \texttt{Uloha} overuje prienik časových intervalov pre dané \texttt{id\_zamestnanca}.
+        \item \textit{Zápis:} \texttt{INSERT} nového záznamu do tabuľky \texttt{Uloha} s príslušným \texttt{FK\_Zamestnanec}.
+        \item \textit{Kontrola pravidiel:} Uplatnenie biznis pravidiel č. 4 (Oprávnenie) a č. 5 (Dostupnosť zamestnanca).
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} V prípade, že pre daný typ úlohy v požadovanom čase neexistuje žiadny dostupný a kvalifikovaný zamestnanec, systém vráti prázdny \textit{result set} a informuje manažéra o podstave personálu.
+    \item \textbf{UML diagram:} \textbf{Este treba Diagram aktivít}.
+\end{itemize}
+
+\subsection*{Scenár 4: Generovanie agregovaných štatistík predajnosti}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Generovanie manažérskeho reportu. Ide o analytický dopyt, ktorý agreguje transakčné dáta za určité časové obdobie a zoskupuje ich podľa jednotlivých filmových titulov.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Manažér si vyžiada štatistický prehľad a definuje časový parameter (napr. konkrétny deň).
+        \item Systém spustí analytický dopyt naprieč relačnou štruktúrou dát.
+        \item Databázový stroj prepojí filmy, ich premietania a prislúchajúce predané lístky.
+        \item Systém vypočíta metriky: celkový počet predaných lístkov a percentuálnu obsadenosť.
+        \item Vrátená množina dát (dataset) je formátovaná do prehľadnej tabuľky pre manažéra.
+    \end{enumerate}
+    \item \textbf{Dátova vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie a Agregácia:} Nevykonáva sa žiadny zápis. Dominantný je komplexný \texttt{SELECT} spájajúci tabuľky \texttt{Film}, \texttt{Premietanie} a \texttt{Listok} cez príslušné cudzie kľúče.
+        \item Využívajú sa agregačné funkcie: \texttt{COUNT(id\_listka)} pre zisťovanie návštevnosti.
+        \item Dáta sú štruktúrované pomocou \texttt{GROUP BY id\_filmu}, pričom sa aplikuje filter \texttt{WHERE} na ohraničenie časového intervalu (\texttt{cas\_zaciatku}).
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak sa vo zvolenom dni nerealizovalo žiadne premietanie (alebo sa nepredali žiadne lístky), spojený dopyt vráti prázdnu množinu a používateľské rozhranie informuje aktéra o nulovej návštevnosti.
+    \item \textbf{UML diagram:} \textbf{Este treba Sekvenčný diagram}.
+\end{itemize}
 
 \newpage
 \section{Návrh relačného modelu}
@@ -133,7 +217,6 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
 
 \textit{zhodnotenie}
 
-% ─── Bibliography ────────────────────────────────────────────────────────────
 \printbibliography
 
 \end{document}
