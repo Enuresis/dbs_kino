@@ -139,7 +139,7 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
     \end{itemize}
     \item \textbf{Alternatívne toky:} Ak databázový dopyt vráti existujúci záznam v kolidujúcom čase, systém vyvolá výnimku, zruší zápis a vyzve manažéra na úpravu vstupných parametrov (iná sála alebo iný čas).
     \item \textbf{UML diagram:}
-	    \begin{figure}[h!]
+	    \begin{figure}[H]
 	        \centering
 	        \includegraphics[width=0.8\textwidth]{../assets/sc1_diag}
 	        \caption{Diagram aktivít - Naplánovanie premietania}
@@ -165,7 +165,7 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
     \end{itemize}
     \item \textbf{Alternatívne toky:} Ak v čase medzi načítaním mapy sály a potvrdením transakcie iný používateľ obsadí vybrané sedadlo (porušenie \texttt{UNIQUE} constraintu), databáza odmietne \texttt{INSERT}. Transakcia sa roll-backne a používateľovi sa aktualizuje mapa s chybovým hlásením.
     \item \textbf{UML diagram:}
-    	\begin{figure}[h!]
+    	\begin{figure}[H]
 	        \centering
 	        \includegraphics[width=0.8\textwidth]{../assets/sc2_diag}
 	        \caption{Sekvenčný diagram - Predaj listkov a alokácia sedadiel}
@@ -192,7 +192,7 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
     \end{itemize}
     \item \textbf{Alternatívne toky:} V prípade, že pre daný typ úlohy v požadovanom čase neexistuje žiadny dostupný a kvalifikovaný zamestnanec, systém vráti prázdny \textit{result set} a informuje manažéra o podstave personálu.
     \item \textbf{UML diagram:}
-    	\begin{figure}[h!]
+    	\begin{figure}[H]
 	        \centering
 	        \includegraphics[width=0.8\textwidth]{../assets/sc3_diag}
 	        \caption{Diagram aktivít - Alokácia presonálnych kapacít na prevádzkové úlohy}
@@ -218,7 +218,7 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
     \end{itemize}
     \item \textbf{Alternatívne toky:} Ak sa vo zvolenom dni nerealizovalo žiadne premietanie (alebo sa nepredali žiadne lístky), spojený dopyt vráti prázdnu množinu a používateľské rozhranie informuje aktéra o nulovej návštevnosti.
     \item \textbf{UML diagram:}
-    	\begin{figure}[h!]
+    	\begin{figure}[H]
 	        \centering
 	        \includegraphics[width=0.8\textwidth]{../assets/sc4_diag}
 	        \caption{Sekvenčný diagram - Generovanie agregovaných štatistík predajnosti}
