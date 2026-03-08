@@ -138,7 +138,12 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
         \item \textit{Kontrola pravidiel:} Uplatňuje sa biznis pravidlo č. 2.
     \end{itemize}
     \item \textbf{Alternatívne toky:} Ak databázový dopyt vráti existujúci záznam v kolidujúcom čase, systém vyvolá výnimku, zruší zápis a vyzve manažéra na úpravu vstupných parametrov (iná sála alebo iný čas).
-    \item \textbf{UML diagram:} \textbf{Este treba Diagram aktivít}.
+    \item \textbf{UML diagram:}
+	    \begin{figure}[h!]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc1_diag}
+	        \caption{Diagram aktivít - Naplánovanie premietania}
+	    \end{figure}
 \end{itemize}
 
 \subsection*{Scenár 2: Transakčný predaj lístkov s alokáciou sedadiel}
@@ -159,7 +164,12 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
         \item \textit{Kontrola pravidiel:} Uplatňuje sa integritné obmedzenie \texttt{UNIQUE(FK\_Premietanie, FK\_Sedadlo)} na databázovej úrovni, čo garantuje pravidlo č. 1 (Unikátnosť lístka). Zabezpečuje sa aj pravidlo č. 6 (Konzistencia sedadiel).
     \end{itemize}
     \item \textbf{Alternatívne toky:} Ak v čase medzi načítaním mapy sály a potvrdením transakcie iný používateľ obsadí vybrané sedadlo (porušenie \texttt{UNIQUE} constraintu), databáza odmietne \texttt{INSERT}. Transakcia sa roll-backne a používateľovi sa aktualizuje mapa s chybovým hlásením.
-    \item \textbf{UML diagram:} \textbf{Este treba Sekvenčný diagram}.
+    \item \textbf{UML diagram:}
+    	\begin{figure}[h!]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc2_diag}
+	        \caption{Sekvenčný diagram - Predaj listkov a alokácia sedadiel}
+	    \end{figure}
 \end{itemize}
 
 \subsection*{Scenár 3: Alokácia personálnych kapacít na prevádzkové úlohy}
@@ -181,7 +191,12 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
         \item \textit{Kontrola pravidiel:} Uplatnenie biznis pravidiel č. 4 (Oprávnenie) a č. 5 (Dostupnosť zamestnanca).
     \end{itemize}
     \item \textbf{Alternatívne toky:} V prípade, že pre daný typ úlohy v požadovanom čase neexistuje žiadny dostupný a kvalifikovaný zamestnanec, systém vráti prázdny \textit{result set} a informuje manažéra o podstave personálu.
-    \item \textbf{UML diagram:} \textbf{Este treba Diagram aktivít}.
+    \item \textbf{UML diagram:}
+    	\begin{figure}[h!]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc3_diag}
+	        \caption{Diagram aktivít - Alokácia presonálnych kapacít na prevádzkové úlohy}
+	    \end{figure}
 \end{itemize}
 
 \subsection*{Scenár 4: Generovanie agregovaných štatistík predajnosti}
@@ -202,7 +217,12 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
         \item Dáta sú štruktúrované pomocou \texttt{GROUP BY id\_filmu}, pričom sa aplikuje filter \texttt{WHERE} na ohraničenie časového intervalu (\texttt{cas\_zaciatku}).
     \end{itemize}
     \item \textbf{Alternatívne toky:} Ak sa vo zvolenom dni nerealizovalo žiadne premietanie (alebo sa nepredali žiadne lístky), spojený dopyt vráti prázdnu množinu a používateľské rozhranie informuje aktéra o nulovej návštevnosti.
-    \item \textbf{UML diagram:} \textbf{Este treba Sekvenčný diagram}.
+    \item \textbf{UML diagram:}
+    	\begin{figure}[h!]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc4_diag}
+	        \caption{Sekvenčný diagram - Generovanie agregovaných štatistík predajnosti}
+	    \end{figure}
 \end{itemize}
 
 \newpage
