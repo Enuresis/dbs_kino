@@ -229,7 +229,117 @@ Systém je určený primárne pre manažéra kina (administrácia) a radových z
 \section{Návrh relačného modelu}
 \label{sec:relacny_model}
 
-\textit{Tu navrhy}
+Navrhnutý fyzický dátový model je v 3. normálnej forme (3NF). Všetky tabuľky využívajú umelý primárny kľúč (\texttt{id} typu \texttt{INT} s auto-inkrementom). M:N väzby sú plne dekomponované.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/relac_model}
+    \caption{Fyzický relačný model databázy kina v UML notácii}
+    \label{fig:relacny_model}
+\end{figure}
+
+\subsection{Detailný popis tabuliek}
+
+\subsubsection{Tabuľka: Film}
+\begin{itemize}
+    \item \textbf{Účel:} Centrálny katalóg filmových titulov.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{nazov (VARCHAR, NOT NULL)}.
+        \item \texttt{dlzka\_minut (INT, NOT NULL, CHECK > 0)}.
+        \item \texttt{zaner (VARCHAR, NULL)}.
+        \item \texttt{vekovy\_limit (INT, DEFAULT 0)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Kinosala}
+\begin{itemize}
+    \item \textbf{Účel:} Evidencia priestorov určených na premietanie.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{nazov (VARCHAR, NOT NULL, UNIQUE)}.
+        \item \texttt{typ\_premietania (VARCHAR, CHECK IN ('2D','3D'))}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Sedadlo}
+\begin{itemize}
+    \item \textbf{Účel:} Priestorová matica pre konkrétnu kinosálu.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_kinosala (INT, FK)}.
+        \item \texttt{rad (INT, NOT NULL, CHECK > 0)}, \texttt{cislo (INT, NOT NULL, CHECK > 0)}.
+        \item \textbf{Integrita:} \texttt{UNIQUE(id\_kinosala, rad, cislo)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Premietanie}
+\begin{itemize}
+    \item \textbf{Účel:} Prevádzkový harmonogram (spojenie filmu, sály a času).
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_film (INT, FK)}, \texttt{id\_kinosala (INT, FK)}.
+        \item \texttt{cas\_zaciatku (DATETIME, NOT NULL)}, \texttt{cas\_konca (DATETIME, NOT NULL)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Listok}
+\begin{itemize}
+    \item \textbf{Účel:} Transakčná väzobná tabuľka reprezentujúca predaj.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_premietanie (INT, FK)}, \texttt{id\_sedadlo (INT, FK)}.
+        \item \texttt{cena (DECIMAL(5,2), NOT NULL)}.
+        \item \texttt{cas\_predaja (DATETIME, DEFAULT CURRENT\_TIMESTAMP)}.
+        \item \textbf{Integrita:} \texttt{UNIQUE(id\_premietanie, id\_sedadlo)} – implementácia biznis pravidla č. 1 (Unikátnosť lístka).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Zamestnanec}
+\begin{itemize}
+    \item \textbf{Účel:} Personálna evidencia.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{meno (VARCHAR, NOT NULL)}, \texttt{priezvisko (VARCHAR, NOT NULL)}.
+        \item \texttt{typ\_uvazku (VARCHAR, NOT NULL)}.
+        \item \texttt{platnost\_zdrav\_preukazu (DATE, NULL)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Uloha}
+\begin{itemize}
+    \item \textbf{Účel:} Harmonogram úloh priradených zamestnancom.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_zamestnanec (INT, FK)}.
+        \item \texttt{id\_kinosala (INT, FK, NULL)}: Umožňuje viazať úlohu (napr. upratovanie, kontrola) na konkrétnu sálu. Hodnota NULL pre úlohy nezávislé od sály (napr. pokladňa).
+        \item \texttt{typ\_ulohy (VARCHAR, NOT NULL)}.
+        \item \texttt{cas\_zaciatku (DATETIME, NOT NULL)}, \texttt{cas\_konca (DATETIME, NOT NULL)}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Popis vzťahov a referenčná integrita (CASCADE vs. RESTRICT)}
+
+Všetky definované vzťahy sú typu \textbf{1:N}.
+
+\begin{itemize}
+    \item \textbf{Kinosala (1) --- (1..N) Sedadlo}: \texttt{ON DELETE CASCADE}. Odstránením záznamu kinosály zanikajú všetky k nej priradené sedadlá.
+    \item \textbf{Film (1) --- (0..N) Premietanie}: \texttt{ON DELETE RESTRICT}. Zabráni vymazaniu filmu, ak na neho existuje naplánované premietanie.
+    \item \textbf{Kinosala (1) --- (0..N) Premietanie}: \texttt{ON DELETE RESTRICT}. Zabráni odstráneniu kinosály, v ktorej je naplánovaný program.
+    \item \textbf{Premietanie (1) --- (0..N) Listok} a \textbf{Sedadlo (1) --- (0..N) Listok}: \texttt{ON DELETE RESTRICT}. Predstavuje finančný a transakčný záznam. Kým existuje aspoň jeden predaný lístok, rodičovské záznamy (premietanie ani sedadlo) nesmú byť vymazané.
+    \item \textbf{Zamestnanec (1) --- (0..N) Uloha}: \texttt{ON DELETE CASCADE}. Pri výmaze zamestnanca zo systému (napr. GDPR požiadavka) sa odstraňuje aj jeho harmonogram úloh.
+    \item \textbf{Kinosala (1) --- (0..N) Uloha}: \texttt{ON DELETE CASCADE}. Ak zanikne sála, zanikajú aj naplánované prevádzkové úlohy viazané exkluzívne na tento priestor.
+\end{itemize}
+
+\subsection{Zabezpečenie integritných obmedzení a pokrytie scenárov}
+Navrhnutý model natívne rieši stanovené obmedzenia na dátovej vrstve (Unikátnosť lístka cez zložité \texttt{UNIQUE} obmedzenie, prevencia duplicít sedadiel cez definovanú doménu v sále). Ostatné pravidlá (Časová exkluzivita, Prekrývanie úloh, Platnosť preukazu) sa dynamicky vyhodnocujú v rámci aplikačnej logiky transakcií popísaných v používateľských scenároch. Tabuľky poskytujú kompletnú infraštruktúru atribútov (časové pečiatky, sumy, stavové flagy) potrebnú na realizáciu všetkých 4 definovaných Use-case tokov.
 
 \newpage
 \section{Zhodnotenie}
