@@ -1,0 +1,491 @@
+%! Author = jdubec
+%! Date = 16/02/2026
+
+\documentclass[11pt, a4paper]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}       % krajsie tabulky (\toprule, \midrule, \bottomrule)
+\usepackage{float}          % [H] umiestnenie pre obrazky a tabulky
+\usepackage{xcolor}         % farby (pouzite v listings)
+\usepackage{listings}       % vypis kodu
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue!70!black}
+
+% ─── Code listing style ─────────────────────────────────────────────────────
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    xleftmargin=2em,
+    framexleftmargin=1.5em
+}
+
+% ─── Bibliography ────────────────────────────────────────────────────────────
+\usepackage[style=numeric, backend=bibtex]{biblatex}
+\addbibresource{references.bib}
+
+% ─── Language────────────────────────────────────────────
+\input{lang/sk}
+
+% ─── Detaily studenta ────────────────────────────────────
+\newcommand{\StudentName}{Peter Mezei, David Blanco}
+\newcommand{\StudyGroup}{Utorok 11:00}
+\newcommand{\AssignmentNumber}{1}
+\newcommand{\AssignmentTitle}{Návrh databázového modelu - Správa kina}
+\newcommand{\AcademicYear}{2025/2026}
+
+\begin{document}
+
+% ─── Titulna stranka ─────────────────────────────────────────────────────────
+\begin{titlepage}
+    \centering
+
+    \includegraphics[width=0.3\textwidth]{../assets/logo}
+
+    \vspace{0.3cm}
+    {\large \LabelUniversity}\\[2pt]
+    {\large \LabelFaculty}
+
+    \vspace{2.5cm}
+    {\Huge\bfseries \LabelProtocol}
+
+    \vspace{0.6cm}
+    {\LARGE \LabelCode{} --- \LabelCourse}
+
+    \vspace{0.4cm}
+    {\Large \LabelAssignment{} \AssignmentNumber: \AssignmentTitle}
+
+    \vfill
+
+    \begin{tabular}{r l}
+        \textbf{\LabelStudent:} & \StudentName  \\[4pt]
+        \textbf{\LabelGroup:}   & \StudyGroup   \\[4pt]
+        \textbf{\LabelYear:}    & \AcademicYear \\[4pt]
+        \textbf{\LabelDate:}    & \today        \\
+    \end{tabular}
+
+    \vspace{1.5cm}
+\end{titlepage}
+
+% ─── Obsah ───────────────────────────────────────────────────────────────────
+\renewcommand{\contentsname}{\LabelContents}
+\tableofcontents
+\newpage
+
+\section{Zmeny oproti Zadaniu 1}
+\label{sec:specifikacia}
+Na základe feedback-u a v procese implementácie sme vykonali nasledovné zmeny:
+\subsection{Pridaná tabuľka: zanre}
+\begin{itemize}
+    \item \textbf{Účel:} Číselník so žánrami filmov v ponuke.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{nazov (VARCHAR, NOT NULL)}.
+    \end{itemize}
+    \item \textbf{Dopad:} Tabuľka \texttt{filmy} neobsahuje atribút \texttt{zaner}, ale obsahuje cudzí kľúč ukazujúci na číselník žánrov.
+\end{itemize}
+\subsection{Pridaná tabuľka: typy\_uvazku}
+\begin{itemize}
+    \item \textbf{Účel:} Číselník s typmi úväzku zamestnancov.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{uvazok (VARCHAR, NOT NULL)}.
+    \end{itemize}
+    \item \textbf{Dopad:} Tabuľka \texttt{zamestnanci} neobsahuje atribút \texttt{typ\_uvazku}, ale obsahuje cudzí kľúč ukazujúci na číselník typov úväzkov.
+\end{itemize}
+\subsection{Pridaná tabuľka: typy\_uloh}
+\begin{itemize}
+    \item \textbf{Účel:} Číselník s typmi úloh vykonávaných zamestnancami.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{nazov\_ulohy (VARCHAR, NOT NULL)}.
+    \end{itemize}
+    \item \textbf{Dopad:} Tabuľka \texttt{ulohy} neobsahuje atribút \texttt{typ\_ulohy}, ale obsahuje cudzí kľúč ukazujúci na číselník typov úloh.
+\end{itemize}
+\subsection{Zmena v naceňovaní lístkov}
+\begin{itemize}
+    \item \textbf{Účel:} Aby nebolo nutné každý lístok osobitne naceňovať, cena lístku sa stanovuje pre premietanie. Kvôli referenčnej integrite (nie je možné vymazať záznam o premietaní, pokiaľ existuje pre dané premietanie aspoň jeden predaný lístok) sa tak nestráca záznam o transakcii.
+    \item \textbf{Zmeny:} Atribút \texttt{cena} z tabuľky \texttt{listky} presunutý do tabuľky \texttt{premietania}.
+\end{itemize}
+
+\textbf{Treba pridat aktualizovanu schemu}
+
+\newpage
+
+\section{Fyzický model - implementácia}
+\label{sec:implementacia}
+
+\subsection{Stručný opis tabuliek}
+
+\subsection{Zanre}
+\begin{itemize}
+    \item Číselník so žánrami filmov v ponuke.
+\end{itemize}
+
+\subsection{Typy\_uvazku}
+\begin{itemize}
+    \item Číselník s typmi úväzku zamestnancov.
+\end{itemize}
+
+\subsection{Typy\_uloh}
+\begin{itemize}
+    \item Číselník s typmi úloh vykonávaných zamestnancami.
+\end{itemize}
+
+\subsubsection{Filmy}
+\begin{itemize}
+\item Centrálny katalóg filmových titulov.
+\end{itemize}
+
+\subsubsection{Kinosaly}
+\begin{itemize}
+    \item Evidencia priestorov určených na premietanie.
+\end{itemize}
+
+\subsubsection{Sedadla}
+\begin{itemize}
+    \item Priestorová matica pre konkrétnu kinosálu.
+    \item Integritné obmedzenie \texttt{UNIQUE(id\_kinosala, rad, cislo)} zabezpečuje unikátnosť každého sedadla v každej kinosále. 
+    \item Stratégia \texttt{FOREIGN KEY (id\_kinosala) REFERENCES kinosaly(id) ON DELETE CASCADE} bola zvolená, pretože pri odstránení kinosály by inak sedadlá odstránenej kinosály zostali v databáze.
+\end{itemize}
+
+\subsubsection{Premietania}
+\begin{itemize}
+    \item \textbf{Účel:} Prevádzkový harmonogram (spojenie filmu, sály a času).
+    \item Stratégie \texttt{FOREIGN KEY (id\_film) REFERENCES filmy(id) ON DELETE RESTRICT} a \texttt{FOREIGN KEY (id\_kinosala) REFERENCES kinosaly(id) ON DELETE RESTRICT} boli zvolené, pretože pokiaľ existuje naplánované premietanie filmu v sále, nemôže byť odstránený ani premietaný film, ani príslušná sála z databázy.
+\end{itemize}
+
+\subsubsection{Listky}
+\begin{itemize}
+    \item Transakčná väzobná tabuľka reprezentujúca predaj.
+    \item Integritné obmedzenie \texttt{UNIQUE(id\_premietanie, id\_sedadlo)} zabezpečuje, že predaný lístok sa vždy vzťahuje na jedno sedadlo na konkrétnom premietaní.
+    \item Stratégie \texttt{FOREIGN KEY (id\_premietanie) REFERENCES premietania(id) ON DELETE RESTRICT} a \texttt{FOREIGN KEY (id\_sedadlo) REFERENCES sedadla(id) ON DELETE RESTRICT} boli zvolené, pretože pokiaľ existuje záznam o transakcii (lístok), nemôžu byť vymazné špecifiká tejto transakcie.
+\end{itemize}
+
+\subsubsection{Zamestnanci}
+\begin{itemize}
+    \item Personálna evidencia.
+\end{itemize}
+
+\subsubsection{Ulohy}
+\begin{itemize}
+    \item Harmonogram úloh priradených zamestnancom.
+    \item Stratégia \texttt{FOREIGN KEY (id\_zamestnanec) REFERENCES zamestnanci(id) ON DELETE CASCADE} bola zvolená, aby pri odstránení zamestnanca boli z databázy odstránené aj úlohy nemu pridelené kvôli GDPR požiadavkám. 
+    \item Stratégia \texttt{FOREIGN KEY (id\_kinosala) REFERENCES kinosaly(id) ON DELETE CASCADE} bola zvolená, aby pri odstránení kinosály z databázy boli aj všetky naplánované úlohy pre danú kinosálu, pretože ich nebude kde vykonať.
+\end{itemize}
+
+\newpage
+
+\section{Seed dáta}
+\label{sec:seed}
+
+
+
+\newpage
+
+\section{Proces 1 - nazov procesu}
+\label{sec:proces1}
+
+
+
+\newpage
+
+\section{Proces 2 - nazov procesu}
+\label{sec:proces2}
+
+
+
+\newpage
+
+\section{Výkonnosť a indexy}
+\label{sec:indexy}
+
+
+
+\newpage
+
+\section{Zhodnotenie}
+\label{sec:zhodnotenie}
+
+
+
+\newpage
+
+\newpage
+\section{Definovanie používateľských scenárov}
+\label{sec:scenare}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/usecase_diag}
+    \caption{Prehľadový Use Case diagram systému}
+    \label{fig:usecase}
+\end{figure}
+
+\subsection*{Scenár 1: Naplánovanie harmonogramu premietania}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Vytvorenie inštancie entity \textit{Premietanie}. Manažér priraďuje \textit{Film} do zvolenej \textit{Kinosály} na určený časový interval, pričom sa validuje časová exkluzivita sály.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Manažér inicializuje proces tvorby nového premietania a vyberie záznam z číselníka filmov.
+        \item Systém načíta atribút \textit{dĺžka} z vybraného filmu.
+        \item Manažér definuje \textit{čas\_začiatku} a vyberie cieľovú kinosálu.
+        \item Systém algoritmicky vypočíta \textit{čas\_konca} (čas začiatku + dĺžka filmu + definovaná konštanta pre údržbu/upratovanie sály).
+        \item Systém vykoná dopyt na existujúce premietania pre danú kinosálu a overí, či nedochádza k prieniku časových intervalov.
+        \item Transakcia je potvrdená (commit) a záznam je perzistentne uložený.
+    \end{enumerate}
+    \item \textbf{Dátová vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie:} \texttt{SELECT} nad tabuľkou \texttt{Film} pre získanie dĺžky. Následne \texttt{SELECT} nad tabuľkou \texttt{Premietanie} s vyhodnotením prekrývania časových pečiatok (\texttt{DATETIME}) pre daný \texttt{FK\_Kinosala}.
+        \item \textit{Zápis:} \texttt{INSERT} do tabuľky \texttt{Premietanie}.
+        \item \textit{Kontrola pravidiel:} Uplatňuje sa biznis pravidlo č. 2.
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak databázový dopyt vráti existujúci záznam v kolidujúcom čase, systém vyvolá výnimku, zruší zápis a vyzve manažéra na úpravu vstupných parametrov.
+    \item \textbf{UML diagram:}
+	    \begin{figure}[H]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc1_diag}
+	        \caption{Diagram aktivít - Naplánovanie premietania}
+	    \end{figure}
+\end{itemize}
+
+\subsection*{Scenár 2: Transakčný predaj lístkov s alokáciou sedadiel}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Pokladník realizuje predaj lístkov. Vyžaduje sa načítanie mapy sály, kontrola dostupnosti a vytvorenie záznamov rešpektujúcich unikátnosť sedadla.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Pokladník vyberie inštanciu aktuálneho premietania.
+        \item Systém načíta topológiu sály a vyhodnotí obsadenosť jednotlivých sedadiel.
+        \item Pokladník označí množinu voľných sedadiel (napr. 2 lístky) a inicializuje platbu.
+        \item Systém bezprostredne pred zápisom overí aktuálnosť stavu.
+        \item Systém vygeneruje záznamy pre lístky a označí ich ako predané.
+    \end{enumerate}
+    \item \textbf{Dátová vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie:} Relačné spojenie (\texttt{JOIN}) tabuliek \texttt{Kinosala} a \texttt{Sedadlo}. Na zistenie voľných miest sa aplikuje \texttt{LEFT JOIN} na tabuľku \texttt{Listok} (záznamy s hodnotou \texttt{NULL} reprezentujú voľné sedadlá).
+        \item \textit{Zápis:} Viacnásobný \texttt{INSERT} do tabuľky \texttt{Listok}.
+        \item \textit{Kontrola pravidiel:} Uplatňuje sa integritné obmedzenie \texttt{UNIQUE(FK\_Premietanie, FK\_Sedadlo)} na databázovej úrovni, čo garantuje pravidlo č. 1 (Unikátnosť lístka). Zabezpečuje sa aj pravidlo č. 6 (Konzistencia sedadiel).
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak v čase medzi načítaním mapy a potvrdením iný používateľ obsadí vybrané sedadlo (porušenie \texttt{UNIQUE}), transakcia sa roll-backne a UI sa aktualizuje.
+    \item \textbf{UML diagram:}
+    	\begin{figure}[H]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc2_diag}
+	        \caption{Sekvenčný diagram - Predaj listkov a alokácia sedadiel}
+	    \end{figure}
+\end{itemize}
+
+\subsection*{Scenár 3: Alokácia personálnych kapacít na prevádzkové úlohy}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Manažér priraďuje inštanciu entity \textit{Úloha} zamestnancovi. Systém filtruje zamestnancov na základe kvalifikačných obmedzení a časovej disponibility.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Manažér definuje typ úlohy a vyžadovaný časový interval.
+        \item Systém načíta a aplikuje filtre na záznamy v tabuľke zamestnancov na základe typu úlohy.
+        \item Zobrazí sa podmnožina zamestnancov, ktorí spĺňajú podmienky.
+        \item Manažér vyberie zamestnanca a potvrdí alokáciu.
+        \item Systém verifikuje, či zamestnanec nemá v danom čase priradenú inú úlohu.
+        \item Systém vytvorí asociáciu medzi zamestnancom a úlohou.
+    \end{enumerate}
+    \item \textbf{Dátova vrstva}
+    \begin{itemize}
+        \item \textit{Čítanie:} Filtrovací \texttt{SELECT} nad entitou \texttt{Zamestnanec} (\texttt{WHERE platnost\_zdrav\_preukazu >= CURRENT\_DATE}). Dopyt nad tabuľkou \texttt{Uloha} overuje prienik intervalov pre dané \texttt{id\_zamestnanec}.
+        \item \textit{Zápis:} \texttt{INSERT} do tabuľky \texttt{Uloha}.
+        \item \textit{Kontrola pravidiel:} Uplatnenie biznis pravidiel č. 4 (Oprávnenie) a č. 5 (Dostupnosť zamestnanca).
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak neexistuje dostupný a kvalifikovaný zamestnanec, systém vráti prázdny result set a informuje manažéra.
+    \item \textbf{UML diagram:}
+    	\begin{figure}[H]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc3_diag}
+	        \caption{Diagram aktivít - Alokácia presonálnych kapacít na prevádzkové úlohy}
+	    \end{figure}
+\end{itemize}
+
+\subsection*{Scenár 4: Generovanie agregovaných štatistík predajnosti}
+\begin{itemize}
+    \item \textbf{Názov a stručný popis:} Analytický dopyt agregujúci transakčné dáta za určité obdobie so zoskupením podľa filmových titulov.
+    \item \textbf{Hlavný tok:}
+    \begin{enumerate}
+        \item Manažér si vyžiada štatistický prehľad a definuje časový parameter.
+        \item Systém spustí analytický dopyt.
+        \item Databázový stroj prepojí filmy, premietania a predané lístky.
+        \item Systém vypočíta celkový počet predaných lístkov a tržby.
+        \item Dataset je naformátovaný do prehľadnej tabuľky.
+    \end{enumerate}
+    \item \textbf{Dátova vrstva}
+    \begin{itemize}
+    	\item \textit{Čítanie:} Komplexný \texttt{SELECT} spájajúci \texttt{Film}, \texttt{Premietanie} a \texttt{Listok}.
+    	\item \textit{Agregácia:} Využitie funkcií \texttt{COUNT} a \texttt{SUM} zoskupených pomocou \texttt{GROUP BY id\_film}, s filtrom \texttt{WHERE} na časový interval.
+    \end{itemize}
+    \item \textbf{Alternatívne toky:} Ak sa nerealizovalo žiadne premietanie, dopyt vráti prázdnu množinu a UI informuje o nulovej návštevnosti.
+    \item \textbf{UML diagram:}
+    	\begin{figure}[H]
+	        \centering
+	        \includegraphics[width=0.8\textwidth]{../assets/sc4_diag}
+	        \caption{Sekvenčný diagram - Generovanie agregovaných štatistík predajnosti}
+	    \end{figure}
+\end{itemize}
+
+\newpage
+\section{Návrh relačného modelu}
+\label{sec:relacny_model}
+
+Navrhnutý fyzický dátový model je v 3. normálnej forme (3NF). Tabuľky využívajú umelý primárny kľúč (\texttt{id} typu \texttt{INT} s auto-inkrementom). M:N väzby sú plne dekomponované.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/relac_model}
+    \caption{Fyzický relačný model databázy kina v UML notácii}
+    \label{fig:relacny_model}
+\end{figure}
+
+\subsection{Detailný popis tabuliek}
+
+\subsubsection{Tabuľka: Film}
+\begin{itemize}
+    \item \textbf{Účel:} Centrálny katalóg filmových titulov.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{nazov (VARCHAR, NOT NULL)}.
+        \item \texttt{dlzka\_minut (INT, NOT NULL, CHECK > 0)}.
+        \item \texttt{zaner (VARCHAR, NULL)}.
+        \item \texttt{vekovy\_limit (INT, DEFAULT 0)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Kinosala}
+\begin{itemize}
+    \item \textbf{Účel:} Evidencia priestorov určených na premietanie.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{nazov (VARCHAR, NOT NULL, UNIQUE)}.
+        \item \texttt{typ\_premietania (VARCHAR, CHECK IN ('2D','3D'))}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Sedadlo}
+\begin{itemize}
+    \item \textbf{Účel:} Priestorová matica pre konkrétnu kinosálu.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_kinosala (INT, FK)}.
+        \item \texttt{rad (INT, NOT NULL, CHECK > 0)}, \texttt{cislo (INT, NOT NULL, CHECK > 0)}.
+        \item \textbf{Integrita:} \texttt{UNIQUE(id\_kinosala, rad, cislo)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Premietanie}
+\begin{itemize}
+    \item \textbf{Účel:} Prevádzkový harmonogram (spojenie filmu, sály a času).
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_film (INT, FK)}, \texttt{id\_kinosala (INT, FK)}.
+        \item \texttt{cas\_zaciatku (DATETIME, NOT NULL)}, \texttt{cas\_konca (DATETIME, NOT NULL)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Listok}
+\begin{itemize}
+    \item \textbf{Účel:} Transakčná väzobná tabuľka reprezentujúca predaj.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_premietanie (INT, FK)}, \texttt{id\_sedadlo (INT, FK)}.
+        \item \texttt{cena (DECIMAL(5,2), NOT NULL)}.
+        \item \texttt{cas\_predaja (DATETIME, DEFAULT CURRENT\_TIMESTAMP)}.
+        \item \textbf{Integrita:} \texttt{UNIQUE(id\_premietanie, id\_sedadlo)} – implementácia biznis pravidla č. 1 (Unikátnosť lístka).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Zamestnanec}
+\begin{itemize}
+    \item \textbf{Účel:} Personálna evidencia.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{meno (VARCHAR, NOT NULL)}, \texttt{priezvisko (VARCHAR, NOT NULL)}.
+        \item \texttt{typ\_uvazku (VARCHAR, NOT NULL)}.
+        \item \texttt{platnost\_zdrav\_preukazu (DATE, NULL)}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tabuľka: Uloha}
+\begin{itemize}
+    \item \textbf{Účel:} Harmonogram úloh priradených zamestnancom.
+    \item \textbf{Atribúty a obmedzenia:}
+    \begin{itemize}
+        \item \texttt{id (INT, PK)}.
+        \item \texttt{id\_zamestnanec (INT, FK)}.
+        \item \texttt{id\_kinosala (INT, FK, NULL)}: Umožňuje viazať úlohu (napr. upratovanie, kontrola) na konkrétnu sálu. Hodnota NULL pre úlohy nezávislé od sály (napr. pokladňa).
+        \item \texttt{typ\_ulohy (VARCHAR, NOT NULL)}.
+        \item \texttt{cas\_zaciatku (DATETIME, NOT NULL)}, \texttt{cas\_konca (DATETIME, NOT NULL)}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Popis vzťahov a referenčná integrita}
+
+Všetky definované vzťahy sú typu \textbf{1:N}.
+
+\begin{itemize}
+    \item \textbf{Kinosala (1) --- (1..N) Sedadlo}: \texttt{ON DELETE CASCADE}. Odstránením záznamu kinosály zanikajú všetky k nej priradené sedadlá.
+    \item \textbf{Film (1) --- (0..N) Premietanie}: \texttt{ON DELETE RESTRICT}. Zabráni vymazaniu filmu, ak na neho existuje naplánované premietanie.
+    \item \textbf{Kinosala (1) --- (0..N) Premietanie}: \texttt{ON DELETE RESTRICT}. Zabráni odstráneniu kinosály, v ktorej je naplánovaný program.
+    \item \textbf{Premietanie (1) --- (0..N) Listok} a \textbf{Sedadlo (1) --- (0..N) Listok}: \texttt{ON DELETE RESTRICT}. Predstavuje finančný a transakčný záznam. Kým existuje aspoň jeden predaný lístok, rodičovské záznamy (premietanie ani sedadlo) nesmú byť vymazané.
+    \item \textbf{Zamestnanec (1) --- (0..N) Uloha}: \texttt{ON DELETE CASCADE}. Pri výmaze zamestnanca zo systému (napr. GDPR požiadavka) sa odstraňuje aj jeho harmonogram úloh.
+    \item \textbf{Kinosala (1) --- (0..N) Uloha}: \texttt{ON DELETE CASCADE}. Ak zanikne sála, zanikajú aj naplánované prevádzkové úlohy viazané exkluzívne na tento priestor.
+\end{itemize}
+
+\subsection{Zabezpečenie integritných obmedzení a pokrytie scenárov}
+\begin{enumerate}
+    \item \textbf{Unikátnosť lístka:} Implementované \textbf{na dátovej vrstve} kompozitným obmedzením \texttt{UNIQUE(id\_premietanie, id\_sedadlo)} v tabuľke \texttt{Listok}.
+    \item \textbf{Časová exkluzivita sály:} Implementované \textbf{na aplikačnej vrstve} (Scenár 1). Overuje sa dopytom na prienik časových intervalov pred \texttt{INSERT} operáciou.
+    \item \textbf{Kapacita sály:} Vyplýva \textbf{z fyzickej štruktúry dát}. Vzhľadom na \texttt{UNIQUE} index lístka nie je technicky možné predať viac lístkov, než existuje asociovaných záznamov v tabuľke \texttt{Sedadlo}.
+    \item \textbf{Oprávnenie zamestnanca:} Implementované \textbf{na aplikačnej vrstve} (Scenár 3) pridaním filtra \texttt{WHERE platnost\_zdrav\_preukazu >= CURRENT\_DATE} pri alokácii práce s jedlom.
+    \item \textbf{Dostupnosť zamestnanca:} Riešené \textbf{na aplikačnej vrstve} (Scenár 3) kontrolným dotazom na kolidujúce časy v tabuľke \texttt{Uloha}.
+    \item \textbf{Konzistencia sedadiel:} Implementované \textbf{cez transakčnú logiku} (Scenár 2). Aplikácia načíta platnú topológiu sály (\texttt{JOIN} Kinosala-Sedadlo) výhradne pre sálu priradenú k danému premietaniu.
+\end{enumerate}
+
+\newpage
+\section{Zhodnotenie}
+\label{sec:zhodnotenie}
+
+\begin{itemize}
+    \item \textbf{Ktorá časť riešenia vám zabrala najviac času a prečo?}
+    Najviac času nám zabral samotný návrh tabuliek a vzťahov tak, aby dávali zmysel a pokrývali naše zadanie.
+
+    \item \textbf{S čím ste si nevedeli poradiť? Ako ste to vyriešili?}
+    Chvíľu sme bojovali s nastavením pravidiel mazania pre cudzie kľúče. Nevedeli sme sa na začiatku rozhodnúť, čo sa má zmazať spolu s rodičovskou tabuľkou a čo nie.
+
+    \item \textbf{Čo bolo pre vás úplne nové?}
+    Úplne nové bolo pre nás formálne modelovanie používateľských scenárov z pohľadu databázových operácií (definovanie konkrétnych \texttt{SELECT}, \texttt{INSERT} a \texttt{JOIN} krokov).
+
+    \item \textbf{Pokrýva vaše riešenie správne zvolenú tému? Čo ste zjednodušili alebo vynechali?}
+    Riešenie plne pokrýva doménu správy kina (filmy, sály, lístky, smeny). Pre zjednodušenie modelu sme vynechali modul pre online registrovaných zákazníkov (vernostný program), platobné brány a komplexnejšiu cenotvorbu (napr. zľavy, VIP sedadlá vs. štandardné).
+
+    \item \textbf{Aký bol váš pracovný proces? Postupovali ste iteratívne?}
+    Najprv sme identifikovali entity z reálneho sveta, následne sme spísali obmedzenia. Pri návrhu scenárov sme zistili, že nám v databáze chýbajú niektoré atribúty, takže sme sa vrátili k relačnému modelu a aktualizovali ho.
+
+    \item \textbf{Použili ste AI nástroje? Ak áno – na čo presne, aký bol výstup a ako ste ho upravovali?}
+    Áno. Nástroj sme použili na vygenerovanie syntaxu pre LATEX dokumentáciu. Najprv sme napísali text vo worde a potom pomocov chatgpt sme to skonvertovali do LATEX formátu.
+
+    \item \textbf{Prečo ste si vybrali túto rámcovú tému?}
+    Lebo som pracoval v kine.
+\end{itemize}
+
+\printbibliography
+
+\end{document}
