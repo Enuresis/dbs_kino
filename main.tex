@@ -187,9 +187,28 @@ Na základe feedback-u a v procese implementácie sme vykonali nasledovné zmeny
 
 \section{Seed dáta}
 \label{sec:seed}
+\subsection{Generovanie dát}
+Dáta boli generované v Python-e s pomocou vstavanej knižnice \texttt{random}. Hodnoty atribútov boli generované pomocou funkcií \texttt{random.randint()}, \texttt{random.uniform()}, alebo výberom \texttt{random.choice()} z príslušného zoznamu. Mená sa skladajú z dvoch náhodných výberov, zo zoznamov krstných mien (\texttt{first\_names\_m}, \texttt{first\_names\_f}) a zoznamu priezvísk (\texttt{surnames}). Názvy filmov boli generované spájaním prídavného mena zo zoznamu \texttt{adjectives} s podstatným menom zo zoznamu \texttt{nouns}. Niektorým filmom je pridaná aj podtitulka zo zoznamu \texttt{subtitles}. Na importovanie vygenerovaných dát do PostgreSQL je využívaná knižnica \texttt{psycopg2}.
 
+\subsection{Tabuľky po seede}
+\begin{itemize}
+    \item \textbf{filmy:} 30 - počet vygenerovaných filmov cez funkciu, defaultne 30 filmov
+    \item \textbf{kinosaly:} 8 - podľa dĺžky zoznamu kinosál
+    \item \textbf{listky:} 58 860 - počet vygenerovaných lístkov pre premietanie, obsadenosť premietania je vážená podľa času premietania a dňa v týždni
+    \item \textbf{premietania:} 1 119 - počet vygenerovaných premietaní, pre každý deň je generovaný náhodný počet premietaní, defaultne pre 30 dní
+    \item \textbf{sedadla:} 1 219 - vypočítané ako počet radov * počet sedadiel v rade pre každú sálu
+    \item \textbf{typy\_uloh:} 8 - podľa dĺžky zoznamu typov úloh
+    \item \textbf{typy\_uvazku:} 3 - podľa dĺžky zoznamu typov úväzku
+    \item \textbf{ulohy:} 450 - počet vygenerovaných úloh cez funkciu, defaultne 450 úloh
+    \item \textbf{zamestnanci:} 40 - počet vygenerovaných zamestnancov cez funkciu, defaultne 40 zamestnancov
+    \item \textbf{zanre:} 30 - počet vygenerovaných filmov cez funkciu, defaultne 30 filmov
+\end{itemize}
 
+\subsection{Distribúcia a konsistentnosť dát}
+Počty riadkov boli prevažne svojvoľne vyberané, \textbf{Toto treba dopisat...}
+Konzistentnosť bola zabezpečovaná už pri generovaní záznamov, hlavne aby sa neprekrývali premietania filmov a pridelené úlohy.
 
+\subsection{}
 \newpage
 
 \section{Proces 1 - nazov procesu}
