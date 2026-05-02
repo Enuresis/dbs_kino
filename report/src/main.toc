@@ -1,0 +1,28 @@
+\babel@toc {slovak}{}\relax 
+\contentsline {section}{\numberline {1}Zmeny oproti Zadaniu 1}{2}{section.1}%
+\contentsline {section}{\numberline {2}Fyzický model -- implementácia}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Zoznam tabuliek}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Zaujímavé integritné obmedzenia}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Stratégie ON DELETE}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Ukážka DDL}{4}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Seed dáta}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Spôsob generovania}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Počty záznamov}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Zvolená distribúcia}{5}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Konzistencia}{5}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Proces 1 -- Transakčný predaj lístkov}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Popis a väzba na scenár}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Pomocný pohľad: dostupné sedadlá}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}SQL implementácia (samotný predaj)}{7}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Ukážka spustenia nad seed dátami}{7}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Indexy podporujúce tento proces}{8}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Proces 2 -- Štatistika predajnosti filmov}{9}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Popis a väzba na scenár}{9}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}SQL implementácia}{9}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Ukážka spustenia nad seed dátami}{10}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Indexy podporujúce tento proces}{10}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Výkonnosť a indexy}{11}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Zoznam vytvorených indexov}{11}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}EXPLAIN (ANALYZE, BUFFERS) -- pred a po pridaní indexu}{11}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Dopyty, ktoré zostali pomalé}{12}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Zhodnotenie}{13}{section.7}%
