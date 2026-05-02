@@ -93,3 +93,42 @@ CREATE TABLE listky (
     FOREIGN KEY (id_sedadlo) REFERENCES sedadla (id) ON DELETE RESTRICT,
     UNIQUE (id_premietanie, id_sedadlo)
 );
+
+
+-- ============================================================================
+-- VIEWS
+-- ============================================================================
+
+DROP VIEW IF EXISTS vw_dostupne_sedadla;
+
+CREATE VIEW vw_dostupne_sedadla AS
+SELECT  pr.id      AS id_premietanie,
+        s.id       AS id_sedadlo,
+        s.rad,
+        s.cislo,
+        k.nazov    AS sala,
+        pr.cena
+FROM    premietania pr
+JOIN    kinosaly  k ON k.id = pr.id_kinosala
+JOIN    sedadla   s ON s.id_kinosala = k.id
+LEFT JOIN listky  l ON l.id_premietanie = pr.id
+                   AND l.id_sedadlo     = s.id
+WHERE   l.id IS NULL
+  AND   pr.cas_konca > NOW();
+
+
+-- ============================================================================
+-- INDEXES
+-- ============================================================================
+
+CREATE INDEX IF NOT EXISTS idx_listky_premietanie
+    ON listky (id_premietanie);
+
+CREATE INDEX IF NOT EXISTS idx_premietania_interval_film
+    ON premietania (cas_zaciatku, id, id_film);
+
+CREATE INDEX IF NOT EXISTS idx_filmy_id_nazov
+    ON filmy (id) INCLUDE (nazov);
+
+CREATE INDEX IF NOT EXISTS idx_sedadla_kinosala
+    ON sedadla (id_kinosala);
