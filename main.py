@@ -6,7 +6,7 @@ from datetime import date, datetime, time, timedelta
 import psycopg2
 from psycopg2.extras import execute_values
 
-
+# Enter your DB parameters here
 DB_PARAMS = {
     "dbname": os.getenv("DB_NAME", "kino"),
     "user": os.getenv("DB_USER", "postgres"),
@@ -104,15 +104,15 @@ def seed_filmy(cur, genre_ids, count=120):
         "Tajomny",
         "Divoky",
         "Skryty",
-        "Ledovy",
+        "Ladovy",
         "Ohnivy",
-        "Nocturny",
+        "Nocny",
     ]
     nouns = [
         "Pribeh",
         "Lovec",
-        "Mesto",
-        "Svetlo",
+        "Drak",
+        "Blesk",
         "Tieň",
         "Horizont",
         "Experiment",
@@ -121,7 +121,7 @@ def seed_filmy(cur, genre_ids, count=120):
         "Signal",
         "Vlak",
         "Ostrov",
-        "Misia",
+        "Zakrok",
         "Svedok",
     ]
     subtitles = [
@@ -554,7 +554,7 @@ def main():
 
             cur.execute("SELECT id, dlzka_minut FROM filmy")
             films = cur.fetchall()
-            counts["premietania"] = seed_premietania(cur, films, halls, count_days=30)
+            counts["premietania"] = seed_premietania(cur, films, halls, count_days=90)
 
             employee_ids = fetch_ids(cur, "zamestnanci")
             hall_ids = [hall_id for hall_id, _ in halls]
