@@ -1,5 +1,5 @@
 -- queries.sql -- DBS Zadanie 3, Správa kina
--- Autori: Peter Mezei, David Blanko
+-- Autori: Peter Mezei, David Blanco
 --
 -- Procesy:
 --   1. Operačný   -- Transakčný predaj lístkov  (Z1, Scenár 2)
